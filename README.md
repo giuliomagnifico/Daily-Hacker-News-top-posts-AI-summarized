@@ -1,9 +1,11 @@
 More info: https://giuliomagnifico.blog/post/2025-12-28-daily-ai-summary-hn-n8n/
 
-Import the JSON into n8n and adjust it as you prefer (e.g. 10 or 50 articles).
+## Usage
+
+Import the JSON into n8n and adjust it as you prefer (e.g. 10 or 50 articles, or a different prompt to chatGPT).
 
 
-Results:
+## Results:
 
 <img src="https://github.com/user-attachments/assets/a1961c00-b599-4de9-b932-76059bed5349" width="70%">
 
