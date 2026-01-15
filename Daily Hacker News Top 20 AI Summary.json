@@ -1,0 +1,347 @@
+{
+  "name": "Daily Hacker News Top 20 AI Summary",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        -416
+      ],
+      "id": "fbbdf94b-afcb-404d-b8b0-4fc8b5d15bf6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n Hacker News",
+        "toEmail": "giuliomagnifico@mailbox.org",
+        "subject": "Hacker News - Top 20",
+        "html": "={{ $json.html }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2096,
+        -416
+      ],
+      "id": "7b98b95e-481b-4885-88f4-339fa0206b1d",
+      "name": "Send email",
+      "webhookId": "a865ea41-53ca-4d72-a182-bddc1014641b",
+      "credentials": {
+        "smtp": {
+          "id": "b8wRMAUGI76olFVU",
+          "name": "n8n gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 20
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -416
+      ],
+      "id": "795bc24f-a340-4218-8125-8ce4f731c08c",
+      "name": "Limit (to 20)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b760b94b-7f7c-4247-8c32-a9bd42ab7569",
+              "name": "title",
+              "value": "={{$json.title}}",
+              "type": "string"
+            },
+            {
+              "id": "acb9774f-014c-4d55-81e5-008740f5c61e",
+              "name": "link",
+              "value": "={{$json.url || ('https://news.ycombinator.com/item?id=' + $json.objectID)}}",
+              "type": "string"
+            },
+            {
+              "id": "4b026421-6756-4f91-8a16-18229d69ed6b",
+              "name": "comments",
+              "value": "={{'https://news.ycombinator.com/item?id=' + $json.objectID}}",
+              "type": "string"
+            },
+            {
+              "id": "253da556-86a5-4fad-a1a3-55c1f8178e49",
+              "name": "prompt",
+              "value": "=Summarize in 3 lines:\nLink: {{$json.url || ('https://news.ycombinator.com/item?id=' + $json.objectID)}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        -416
+      ],
+      "id": "e97f4b4d-dbd4-4dac-8417-0b4970bba6d3",
+      "name": "Select Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "o4-mini",
+          "mode": "list",
+          "cachedResultName": "O4-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize this article in one concise lines without any list, only a short summary of the webiste, or the article, or the content of the url. Here's the content: {{ $('Select Fields').item.json.link }} If you can't browse the link, just use the Title to search and summarize it"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1072,
+        -416
+      ],
+      "id": "3c944020-f94f-4580-84f1-442b9eec52ca",
+      "name": "Summarize the links",
+      "credentials": {
+        "openAiApi": {
+          "id": "MjMFrFMizRpJv0wQ",
+          "name": "OpenAi API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2cf58a7a-2714-45fd-b3cd-e636c29eaa5c",
+              "name": "title",
+              "value": "={{ $('Select Fields').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "a7857edb-fcb5-4bcb-ab03-cfcef73ac0e7",
+              "name": "message.content",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "86ac7791-3028-40e8-b075-3240e81b7b38",
+              "name": "link",
+              "value": "={{ $('Select Fields').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "38301451-19f4-49d5-9eaf-6294e3872d78",
+              "name": "comments",
+              "value": "={{ $('Select Fields').item.json.comments }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        -416
+      ],
+      "id": "d2e71769-42d6-4d4c-9a5c-1cffb15f5049",
+      "name": "Merge Fields and Summaries"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map((item, index) => {\n  const summary = item.json.message?.content?.trim() || 'No Summary';\n\n  const title = item.json.title || 'Missing Title';\n  const link = item.json.link || 'Missing Link';\n  const comments = item.json.comments || 'Missing Comments';\n\n  return {\n    json: {\n      index: index + 1,\n      title,\n      summary,\n      link,\n      comments\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        -416
+      ],
+      "id": "ba7461b4-2f65-4d6a-a7a8-99a81875eda8",
+      "name": "Cleanup, Add Numbers"
+    },
+    {
+      "parameters": {
+        "jsCode": "const today = new Date();\nconst formattedDate = today.toLocaleDateString('it-IT', {\n  day: '2-digit',\n  month: '2-digit',\n  year: 'numeric'\n});\n\nconst html = `<h1>Hacker News Frontpage</h1> <h3>[${formattedDate}]</h3><br>` +\n  items.map((item) => {\n    const { index, title, summary, link, comments } = item.json;\n    const s = summary?.trim() || 'Nessun riassunto';\n    return `\n      <h3>${index}. ${title}</h3>\n      <p>${s.replace(/\\n/g, '<br>')}</p>\n      <p>\n        🔗 URL: <a href=\"${link}\" target=\"_blank\">${link}</a><br>\n        💬 Comments: <a href=\"${comments}\" target=\"_blank\">${comments}</a>\n      </p>\n      <hr>`;\n  }).join('\\n');\n\nreturn [{ json: { html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1872,
+        -416
+      ],
+      "id": "1bf7d85a-5eaf-4e02-86c2-939c408c9596",
+      "name": "HTML Formatting"
+    },
+    {
+      "parameters": {
+        "url": "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=20",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        176,
+        -416
+      ],
+      "id": "a5b2b4c0-2e20-40a4-a891-56befa330120",
+      "name": "HTTP Request",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "hits",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -416
+      ],
+      "id": "2aff2a12-9a0f-4f44-95f8-38f72dc1bd7e",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit (to 20)": {
+      "main": [
+        [
+          {
+            "node": "Select Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize the links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize the links": {
+      "main": [
+        [
+          {
+            "node": "Merge Fields and Summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Fields and Summaries": {
+      "main": [
+        [
+          {
+            "node": "Cleanup, Add Numbers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cleanup, Add Numbers": {
+      "main": [
+        [
+          {
+            "node": "HTML Formatting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Formatting": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Limit (to 20)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Rome",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "41fb58fd-9a5d-419b-a093-10720ccaed4a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f415c944f2c94624df7121b6ea873f198491a7a4fde37430e7d014e5cfdfd4f0"
+  },
+  "id": "uxyj7Qy9QsxxCRFX",
+  "tags": []
+}
