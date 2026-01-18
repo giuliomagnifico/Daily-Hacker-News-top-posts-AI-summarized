@@ -31,7 +31,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        2096,
+        1872,
         -416
       ],
       "id": "7b98b95e-481b-4885-88f4-339fa0206b1d",
@@ -43,19 +43,6 @@
           "name": "n8n gmail"
         }
       }
-    },
-    {
-      "parameters": {
-        "maxItems": 20
-      },
-      "type": "n8n-nodes-base.limit",
-      "typeVersion": 1,
-      "position": [
-        624,
-        -416
-      ],
-      "id": "795bc24f-a340-4218-8125-8ce4f731c08c",
-      "name": "Limit (to 20)"
     },
     {
       "parameters": {
@@ -92,7 +79,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        848,
+        624,
         -416
       ],
       "id": "e97f4b4d-dbd4-4dac-8417-0b4970bba6d3",
@@ -119,7 +106,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        1072,
+        848,
         -416
       ],
       "id": "3c944020-f94f-4580-84f1-442b9eec52ca",
@@ -166,7 +153,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1424,
+        1200,
         -416
       ],
       "id": "d2e71769-42d6-4d4c-9a5c-1cffb15f5049",
@@ -179,7 +166,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1648,
+        1424,
         -416
       ],
       "id": "ba7461b4-2f65-4d6a-a7a8-99a81875eda8",
@@ -192,7 +179,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1872,
+        1648,
         -416
       ],
       "id": "1bf7d85a-5eaf-4e02-86c2-939c408c9596",
@@ -235,17 +222,6 @@
         [
           {
             "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Limit (to 20)": {
-      "main": [
-        [
-          {
-            "node": "Select Fields",
             "type": "main",
             "index": 0
           }
@@ -322,7 +298,7 @@
       "main": [
         [
           {
-            "node": "Limit (to 20)",
+            "node": "Select Fields",
             "type": "main",
             "index": 0
           }
@@ -337,7 +313,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "41fb58fd-9a5d-419b-a093-10720ccaed4a",
+  "versionId": "c7ba35d3-9a1a-4b85-9f82-627e3d1e10b3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f415c944f2c94624df7121b6ea873f198491a7a4fde37430e7d014e5cfdfd4f0"
